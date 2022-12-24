@@ -1,0 +1,14 @@
+A list of sources used to complete this project:
+
+https://drive.google.com/file/d/1jWX8Ag5_D3Sb2HAOJVwNIJ3hRuS6eASM/view [Project Walkthrough Video. Used this video to write unit tests in SecurityServiceTest.java]
+
+https://docs.oracle.com/javase/7/docs/api/java/awt/image/BufferedImage.html
+
+https://stackoverflow.com/questions/56921238/unnecessary-stubbing-in-test-class-when-writing-unit-test-in-junit-using-mockito
+
+https://www.baeldung.com/parameterized-tests-junit-5
+
+https://stackoverflow.com/questions/71496063/maven-surefire-test-failed-unsupported-class-file-major-version-61
+
+https://stackoverflow.com/questions/45514907/why-cannot-we-create-spy-for-parameterized-constructor-using-mockito
+

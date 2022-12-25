@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -35,6 +36,7 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
         //we've serialized our sensor objects for storage, which should be a good warning sign that
         // this is likely an impractical solution for a real system
         String sensorString = prefs.get(SENSORS, null);
+
         if(sensorString == null) {
             sensors = new TreeSet<>();
         } else {
@@ -42,6 +44,13 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
             }.getType();
             sensors = gson.fromJson(sensorString, type);
         }
+
+        try {
+            prefs.clear();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

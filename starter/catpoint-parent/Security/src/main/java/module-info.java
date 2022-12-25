@@ -5,7 +5,6 @@ module Security {
     requires java.desktop;
     requires miglayout;
     requires Image;
-    exports com.udacity.catpoint.security.service;
-    exports com.udacity.catpoint.security.data;
-
+    opens com.udacity.catpoint.security.data to com.google.gson;
+    opens com.udacity.catpoint.security.service;
 }

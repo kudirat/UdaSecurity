@@ -1,8 +1,10 @@
 package com.udacity.catpoint.security.service;
 
+import com.google.common.base.Enums;
 import com.udacity.catpoint.image.service.ImageService;
 import com.udacity.catpoint.security.application.StatusListener;
 import com.udacity.catpoint.security.data.*;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -115,7 +118,7 @@ public class SecurityServiceTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void ifAlarmActiveAndSensorChange_NoAlarmEffect(boolean status){
-    lenient().when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
+    when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
 
     securityService.changeSensorActivationStatus(sensor, status);
 
@@ -210,21 +213,19 @@ public class SecurityServiceTest {
     //Test10
     //If the system is armed,
     // reset all sensors to inactive.
-    @Test
-    void ifSystemArmed_resetAllSensorsInactive(){
-        //when system is pending, get sensors and change activation status
-        when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
-        Set<Sensor> currSensors = getSensors(3, true);
-        for(Sensor s: currSensors){
-            securityService.changeSensorActivationStatus(s, false);
-        }
+    @ParameterizedTest
+    @ValueSource(strings = {"ARMED_HOME", "ARMED_AWAY"})
+    void ifSystemArmed_resetAllSensorsInactive(String status){
+    Set<Sensor> currSensors = getSensors(2, true);
+    for(Sensor s: currSensors){
+        securityService.addSensor(s);
+    }
 
-        securityRepository.setArmingStatus(ArmingStatus.ARMED_AWAY);
-        lenient().when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+    lenient().when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.valueOf(status));
 
-        for(Sensor s: currSensors){
-            assertEquals(false, (boolean) s.getActive());
-        }
+    for(Sensor s: securityService.getSensors()){
+        assertTrue(s.getActive() == Boolean.FALSE);
+    }
     }
 
     //Test11
@@ -237,8 +238,6 @@ public class SecurityServiceTest {
         int imageType = random1.nextInt(10) + 1;
         int randInt = random1.nextInt(255) + 1;
         int randInt2 = random1.nextInt(255) + 1;
-
-        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
 
         BufferedImage image = new BufferedImage(randInt, randInt2, imageType);
 
@@ -337,5 +336,16 @@ public class SecurityServiceTest {
         securityService2.setAlarmStatus(AlarmStatus.ALARM);
         securityService2.getAlarmStatus();
         verify(securityService2, times(1)).getAlarmStatus();
+    }
+
+    @Test
+    void ifAlarmAndSensorActiveAndGetsActivatedAgain_HandleDeactivated(){
+        sensor.setActive(true);
+        when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
+        //sensor.setActive(true);
+
+        securityService.changeSensorActivationStatus(sensor, true);
+        verify(securityRepository, times(1)).setAlarmStatus(AlarmStatus.PENDING_ALARM);
+
     }
 }

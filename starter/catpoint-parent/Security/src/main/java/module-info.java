@@ -6,5 +6,4 @@ module Security {
     requires miglayout;
     requires Image;
     opens com.udacity.catpoint.security.data to com.google.gson;
-    opens com.udacity.catpoint.security.service;
 }

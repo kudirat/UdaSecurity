@@ -29,6 +29,11 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
     private static final Gson gson = new Gson(); //used to serialize objects into JSON
 
     public PretendDatabaseSecurityRepositoryImpl() {
+        try {
+            prefs.clear();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
         //load system state from prefs, or else default
         alarmStatus = AlarmStatus.valueOf(prefs.get(ALARM_STATUS, AlarmStatus.NO_ALARM.toString()));
         armingStatus = ArmingStatus.valueOf(prefs.get(ARMING_STATUS, ArmingStatus.DISARMED.toString()));
@@ -44,13 +49,6 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
             }.getType();
             sensors = gson.fromJson(sensorString, type);
         }
-
-        try {
-            prefs.clear();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override

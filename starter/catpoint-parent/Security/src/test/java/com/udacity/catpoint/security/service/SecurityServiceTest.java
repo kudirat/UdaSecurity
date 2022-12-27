@@ -329,19 +329,19 @@ public class SecurityServiceTest {
         verify(securityRepository, atMostOnce()).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
 
-//    @Test
-//    void testGetSensors(){
-//        SecurityService securityService2 = Mockito.spy(securityService);
-//        securityService2.getSensors();
-//        verify(securityService2, times(1)).getSensors();
-//    }
-//
-//    @Test
-//    void testGetAlarmStatus(){
-//        SecurityService securityService2 = Mockito.spy(securityService);
-//        securityService2.setAlarmStatus(AlarmStatus.ALARM);
-//        securityService2.getAlarmStatus();
-//        verify(securityService2, times(1)).getAlarmStatus();
-//    }
+    @Test
+    void GetCurrentSensors(){
+        SecurityService securityService2 = Mockito.spy(securityService);
+        securityService2.getSensors();
+        verify(securityService2, times(1)).getSensors();
+    }
+
+    @Test
+    void GetCurrentAlarmStatus(){
+        SecurityService securityService2 = Mockito.spy(securityService);
+        securityService2.setAlarmStatus(AlarmStatus.ALARM);
+        securityService2.getAlarmStatus();
+        verify(securityService2, times(1)).getAlarmStatus();
+    }
 
 }

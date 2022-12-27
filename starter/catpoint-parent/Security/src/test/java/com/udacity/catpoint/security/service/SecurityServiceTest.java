@@ -118,7 +118,7 @@ public class SecurityServiceTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void ifAlarmActiveAndSensorChange_NoAlarmEffect(boolean status){
-    when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
+    lenient().when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
 
     securityService.changeSensorActivationStatus(sensor, status);
 
@@ -216,11 +216,17 @@ public class SecurityServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"ARMED_HOME", "ARMED_AWAY"})
     void ifSystemArmed_resetAllSensorsInactive(String status){
-    Set<Sensor> currSensors = getSensors(2, true);
+    Set<Sensor> currSensors = getSensors(2, false);
+
     for(Sensor s: currSensors){
         securityService.addSensor(s);
     }
 
+    for(Sensor s: securityService.getSensors()){
+        s.setActive(true);
+    }
+
+    securityService.setArmingStatus(ArmingStatus.valueOf(status));
     lenient().when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.valueOf(status));
 
     for(Sensor s: securityService.getSensors()){
@@ -249,13 +255,13 @@ public class SecurityServiceTest {
     }
 
     @Test
-    void addSensor(){
+    void Test_addSensor(){
         securityService.addSensor(sensor);
         verify(securityRepository, atMostOnce()).addSensor(sensor);
     }
 
     @Test
-    void removeSensor(){
+    void Test_removeSensor(){
         securityService.addSensor(sensor);
         securityService.removeSensor(sensor);
         verify(securityRepository, atMostOnce()).removeSensor(sensor);
@@ -338,14 +344,4 @@ public class SecurityServiceTest {
         verify(securityService2, times(1)).getAlarmStatus();
     }
 
-    @Test
-    void ifAlarmAndSensorActiveAndGetsActivatedAgain_HandleDeactivated(){
-        sensor.setActive(true);
-        when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
-        //sensor.setActive(true);
-
-        securityService.changeSensorActivationStatus(sensor, true);
-        verify(securityRepository, times(1)).setAlarmStatus(AlarmStatus.PENDING_ALARM);
-
-    }
 }

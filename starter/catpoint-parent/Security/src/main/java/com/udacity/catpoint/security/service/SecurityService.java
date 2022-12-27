@@ -138,6 +138,10 @@ public class SecurityService {
             handleSensorActivated();
         } else if ((sensor.getActive() && !active) || (sensor.getActive() && active)) {
             handleSensorDeactivated();
+//        } else if (sensor.getActive() && active) {
+//            if (getAlarmStatus() == AlarmStatus.PENDING_ALARM) {
+//                setAlarmStatus((AlarmStatus.ALARM));
+//            }
         }
 //        else if (securityRepository.getAlarmStatus() == status && sensor.getActive() && active) {
 //            handleSensorDeactivated();

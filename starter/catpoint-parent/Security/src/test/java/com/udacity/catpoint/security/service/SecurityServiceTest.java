@@ -216,19 +216,18 @@ public class SecurityServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"ARMED_HOME", "ARMED_AWAY"})
     void ifSystemArmed_resetAllSensorsInactive(String status){
-    Set<Sensor> currSensors = getSensors(2, false);
+    Set<Sensor> currSensors = getSensors(2, true);
+//
+////    for(Sensor s: currSensors){
+////        securityService.addSensor(s);
+////        securityService.changeSensorActivationStatus(s, true);
+////    }
+//    lenient().when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
+//    securityService.setArmingStatus(ArmingStatus.valueOf(status));
+//    lenient().when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.valueOf(status));
 
-    for(Sensor s: currSensors){
-        securityService.addSensor(s);
-    }
-
-    for(Sensor s: securityService.getSensors()){
-        s.setActive(true);
-    }
-
+    when(securityService.getSensors()).thenReturn(currSensors);
     securityService.setArmingStatus(ArmingStatus.valueOf(status));
-    lenient().when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.valueOf(status));
-
     for(Sensor s: securityService.getSensors()){
         assertTrue(s.getActive() == Boolean.FALSE);
     }
@@ -247,21 +246,23 @@ public class SecurityServiceTest {
 
         BufferedImage image = new BufferedImage(randInt, randInt2, imageType);
 
-        when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+       // securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
         when(imageService.imageContainsCat(any(), anyFloat())).thenReturn(true);
+        //when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
         securityService.processImage(image);
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
 
-        verify(securityRepository, times(1)).setAlarmStatus(AlarmStatus.ALARM);
+        verify(securityRepository, times(2)).setAlarmStatus(AlarmStatus.ALARM);
     }
 
     @Test
-    void Test_addSensor(){
+    void addSensor(){
         securityService.addSensor(sensor);
         verify(securityRepository, atMostOnce()).addSensor(sensor);
     }
 
     @Test
-    void Test_removeSensor(){
+    void removeSensor(){
         securityService.addSensor(sensor);
         securityService.removeSensor(sensor);
         verify(securityRepository, atMostOnce()).removeSensor(sensor);
